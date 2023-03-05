@@ -1,5 +1,4 @@
 require_relative "./piece.rb"
-require_relative "./helper.rb"
 
 class Bishop < Piece
 

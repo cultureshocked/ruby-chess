@@ -29,4 +29,8 @@ class Coordinate
     ]
   end
 
+  def self.alg_from_xy(x_y)
+    return "#{"abcdefgh".find_index(x_y[0])}#{(y - 8).abs}"
+  end
+
 end
