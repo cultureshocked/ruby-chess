@@ -11,6 +11,8 @@ require_relative "./coordinate.rb"
 
 class Board
 
+  attr_reader :current_turn
+
   def initialize(p_one, p_two)
     @grid = Array.new(8) { Array.new(8) {nil} }
     @players = [p_one, p_two]
@@ -68,6 +70,18 @@ class Board
       return @grid[x_y.y][x_y.x]
     end
     return @grid[x_y[1]][x_y[0]]
+  end
+
+  def move(src, dest)
+    @grid[dest[1]][dest[0]] = @grid[src[1]][src[0]]
+    @grid[src[1]][src[0]] = nil
+    @current_turn = (@current_turn == @players[0]) ? @players[1] : @players[0]
+  end
+
+  def capture(src, dest)
+    enemy = query(dest).color
+    @players[enemy].remove_piece(query(dest))
+    move(src, dest)
   end
 
   private

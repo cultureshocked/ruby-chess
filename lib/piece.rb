@@ -16,6 +16,10 @@ class Piece
     @control = []
   end
 
+  def get_xy
+    return @coordinate.x_y
+  end
+
   def legal_moves
     @moves = []
     for t in @transformations
@@ -23,7 +27,7 @@ class Piece
       for i in (0..1)
         x_y[i] += t[i]
       end
-      unless x_y[0].between?(0..7) and x_y[1].between?(0..7)
+      unless x_y[0].between?(0, 7) and x_y[1].between?(0, 7)
         next
       end
       check_move(x_y, t)
@@ -38,7 +42,7 @@ class Piece
       for i in (0..1)
         x_y[i] += t[i]
       end
-      unless x_y[0].between?(0..7) and x_y[1].between?(0..7)
+      unless x_y[0].between?(0, 7) and x_y[1].between?(0, 7)
         next
       end
       check_control(x_y, t)
@@ -55,13 +59,13 @@ class Piece
   def check_move(x_y, transform)
     piece = @board.query(x_y)
     return false if piece and piece.color == @color
-    @moves << x_y
+    @moves << x_y.clone
     return piece.nil?
   end
 
   def check_control(x_y, transform)
     piece = @board.query(x_y)
-    @control << x_y
+    @control << x_y.clone
     return piece.nil?
   end
 end

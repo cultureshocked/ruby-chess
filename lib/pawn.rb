@@ -19,10 +19,10 @@ class Pawn < Piece
     @moves = []
     for t in @transformations
       next if t == nil
-      x = @x + t[0]
-      y = @y + t[1]
+      x = @coordinate.x + t[0]
+      y = @coordinate.y + t[1]
       next unless (x.between?(0, 7) and y.between?(0, 7))
-      square = @board.query(x, y)
+      square = @board.query([x, y])
       unless t[0] == 0
         if square && square.color != @color
           @moves << [x, y]
@@ -43,8 +43,8 @@ class Pawn < Piece
   def controlled_squares
     control = []
     for t in @transformations[2..3]
-      x = @x + t[0]
-      y = @y + t[1]
+      x = @coordinate.x + t[0]
+      y = @coordinate.y + t[1]
       if (x.between?(0, 7) and y.between?(0, 7))
         control << [x, y]
       end
@@ -52,7 +52,7 @@ class Pawn < Piece
     control
   end
 
-  def move
+  def move(x_y)
     super(x_y)
     if @has_moved == false
       @transformations[0] = nil
