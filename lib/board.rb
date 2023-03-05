@@ -68,6 +68,8 @@ class Board
       return @grid[x_y.y][x_y.x]
     end
     return @grid[x_y[1]][x_y[0]]
+  end
+
   private
 
   def print_white
