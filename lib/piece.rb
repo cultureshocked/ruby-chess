@@ -46,6 +46,10 @@ class Piece
     @control
   end
 
+  def move(x_y)
+    @coordinate.update(x_y)
+  end
+
   private
 
   def check_move(x_y, transform)
