@@ -23,13 +23,17 @@ class Coordinate
   end
 
   def self.xy_from_alg(str)
+    return nil unless str.match /^[a-hA-H][1-8]$/
     return [
-      "abcdefgh".split("").find_index(str[0]),
+      "abcdefgh"
+        .split("")
+        .find_index(str[0].downcase),
       (str[1].to_i - 8).abs
     ]
   end
 
   def self.alg_from_xy(x_y)
+    return nil unless x_y[0].between?(0, 7) and x_y[1].between?(0, 7)
     return "#{"abcdefgh".find_index(x_y[0])}#{(y - 8).abs}"
   end
 
