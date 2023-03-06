@@ -9,6 +9,7 @@ class Rook < Piece
       [0, 1], [0, -1],
     ]
     @symbol = (@color == 0) ? white_rook : black_rook
+    @blockable = true
   end
 
   private

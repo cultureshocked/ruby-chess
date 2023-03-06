@@ -9,6 +9,7 @@ class Bishop < Piece
       [-1, 1], [-1, -1]
     ]
     @symbol = (@color == 0) ? white_bishop : black_bishop
+    @blockable = true
   end
 
   private

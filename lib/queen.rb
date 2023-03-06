@@ -11,6 +11,7 @@ class Queen < Piece
       [-1, 1], [-1, -1]
     ]
     @symbol = (@color == 0) ? white_queen : black_queen
+    @blockable = true
   end
 
   private

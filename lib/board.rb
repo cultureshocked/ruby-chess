@@ -11,7 +11,7 @@ require_relative "./coordinate.rb"
 
 class Board
 
-  attr_reader :current_turn
+  attr_reader :current_turn, :finished
 
   def initialize(p_one, p_two)
     @grid = Array.new(8) { Array.new(8) {nil} }
@@ -20,6 +20,9 @@ class Board
 
     p_one.register_board(self)
     p_two.register_board(self)
+
+    p_one.register_opponent(p_two)
+    p_two.register_opponent(p_one)
 
     @turns = 0
     @finished = false
@@ -65,6 +68,8 @@ class Board
     (@current_turn == @players[0]) ? print_white : print_black
   end
 
+
+
   def query(x_y)
     if x_y.class.name == "Coordinate"
       return @grid[x_y.y][x_y.x]
@@ -76,12 +81,32 @@ class Board
     @grid[dest[1]][dest[0]] = @grid[src[1]][src[0]]
     @grid[src[1]][src[0]] = nil
     @current_turn = (@current_turn == @players[0]) ? @players[1] : @players[0]
+    check?(@current_turn)
   end
 
   def capture(src, dest)
     enemy = query(dest).color
     @players[enemy].remove_piece(query(dest))
     move(src, dest)
+  end
+
+  def resign(color)
+    @finished = true
+    puts (color == 0) ? "Black wins #0-1" : "White wins #1-0"
+    @current_turn = nil
+  end
+
+  def stalemate
+    puts "Draw, by no legal moves."
+    puts "1/2 - 1/2"
+    @finished = true
+    @current_turn = nil
+  end
+
+  def check?(current)
+    opponent = (current.color == 0) ? @players[1] : @players[0]
+
+    return opponent.controlled_squares.include?(current.king.get_xy)
   end
 
   private
