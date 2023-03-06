@@ -5,6 +5,7 @@ p_two = Player.new(1)
 board = Board.new(p_one, p_two)
 
 loop do
+  break if board.finished
   player = board.current_turn
   board.print_board
   player.turn
