@@ -217,6 +217,15 @@ class Player
     puts "Enter a move (from to)"
     move = gets.chomp
 
+    if move.downcase == "sss"
+      save(@board)
+      return get_move
+    end
+
+    if move.downcase == "qqq"
+      exit
+    end
+
     if move.downcase == "o-o" or move.downcase == "o-o-o"
       return move
     else
@@ -242,6 +251,30 @@ class Player
       end
     end
     nil
+  end
+
+  def save(board)
+    slot = ""
+    loop do
+      puts "Enter save slot (1-9)"
+      slot = gets.chomp
+      unless slot.match /^[1-9]$/
+        puts "Invalid slot"
+        next
+      end
+      break
+    end
+    save_file = File.open("save_#{slot}", "w+")
+
+    for move in board.moves
+      if move == "o-o" or move == "o-o-o"
+        save_file.write(move + "\n")
+        next
+      end
+      save_file.write(move.join(":") + "\n")
+    end
+
+    save_file.close
   end
 
 end

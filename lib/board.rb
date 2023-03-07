@@ -11,7 +11,7 @@ require_relative "./coordinate.rb"
 
 class Board
 
-  attr_reader :current_turn, :finished
+  attr_reader :current_turn, :finished, :moves
 
   def initialize(p_one, p_two)
     @grid = Array.new(8) { Array.new(8) {nil} }
@@ -25,6 +25,7 @@ class Board
     p_two.register_opponent(p_one)
 
     @turns = 0
+    @moves = []
     @finished = false
 
     #White pawns
@@ -77,7 +78,7 @@ class Board
     return @grid[x_y[1]][x_y[0]]
   end
 
-  def move(src, dest)
+  def move(src, dest, log="M")
     friendly_piece = query(src)
     friendly_player = friendly_piece.player
     @grid[src[1]][src[0]] = nil
@@ -88,6 +89,7 @@ class Board
       return false
     end
     @current_turn = (@current_turn == @players[0]) ? @players[1] : @players[0]
+    @moves << [src, dest, log]
     return true
   end
 
@@ -98,7 +100,7 @@ class Board
     enemy.remove_piece(enemy_piece)
     @grid[dest[1]][dest[0]] = nil
 
-    if move(src, dest)
+    if move(src, dest, "C")
       return true
     else
       @grid[dest[1]][dest[0]] = enemy_piece
@@ -153,7 +155,10 @@ def castle?(direction, player)
     query(rook_src).move(rook_dest)
 
     move_no_change(king_src, king_dest)
-    move(rook_src, rook_dest)
+    move_no_change(rook_src, rook_dest)
+
+    @moves << direction
+    @current_turn = (@current_turn == @players[0]) ? @players[1] : @players[0]
     return true
 
   when "o-o-o"
@@ -179,7 +184,11 @@ def castle?(direction, player)
     query(rook_src).move(rook_dest)
 
     move_no_change(king_src, king_dest)
-    move(rook_src, rook_dest)
+    move_no_change(rook_src, rook_dest)
+
+    @moves << direction
+    @current_turn = (@current_turn == @players[0]) ? @players[1] : @players[0]
+    return true
     return true
   end
 end
