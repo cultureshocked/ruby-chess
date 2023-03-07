@@ -2,6 +2,8 @@ require_relative "./piece.rb"
 
 class Rook < Piece
 
+  attr_reader :has_moved
+
   def initialize(x, y, player, board)
     super(x, y, player, board)
     @transformations = [
@@ -10,6 +12,14 @@ class Rook < Piece
     ]
     @symbol = (@color == 0) ? white_rook : black_rook
     @blockable = true
+    @has_moved = false
+  end
+
+  def move(x_y)
+    unless @has_moved
+      @has_moved = true
+    end
+    super(x_y)
   end
 
   private

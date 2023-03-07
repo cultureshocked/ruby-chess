@@ -81,7 +81,7 @@ class Board
     @grid[dest[1]][dest[0]] = @grid[src[1]][src[0]]
     @grid[src[1]][src[0]] = nil
     @current_turn = (@current_turn == @players[0]) ? @players[1] : @players[0]
-    check?(@current_turn)
+    # check?(@current_turn)
   end
 
   def capture(src, dest)
@@ -105,9 +105,67 @@ class Board
 
   def check?(current)
     opponent = (current.color == 0) ? @players[1] : @players[0]
-
     return opponent.controlled_squares.include?(current.king.get_xy)
   end
+
+def castle?(direction, player)
+  case direction
+  when "o-o"
+    #king can't have moved
+    return false if player.king.has_moved
+
+    king_src = player.king.get_xy
+    king_dest = [king_src[0] + 2, king_src[1]]
+
+    rook_src = player.king.get_xy
+    rook_src[0] += 3
+    rook_dest = [rook_src[0] - 2, rook_src[1]]
+
+    # corner piece must be rook that has not moved
+    return false unless query(rook_src).class.name == "Rook"
+    return false if query(rook_src).has_moved
+
+    # must be blank and not controlled
+    for i in (1..2)
+      coord = [rook_src[0] - i, rook_dest[1]]
+      return false if query(coord) or player.opponent.controlled_squares.include?(coord)
+    end
+
+    #All cases pass:
+    query(king_src).move(king_dest)
+    query(rook_src).move(rook_dest)
+
+    move_no_change(king_src, king_dest)
+    move(rook_src, rook_dest)
+    return true
+
+  when "o-o-o"
+    return false if player.king.has_moved
+
+    king_src = player.king.get_xy
+    king_dest = [king_src[0] - 2, king_src[1]]
+
+    rook_src = player.king.get_xy
+    rook_src[0] -= 4
+    rook_dest = [rook_src[0] + 3, rook_src[1]]
+
+    return false unless query(rook_src).class.name == "Rook"
+    return false if query(rook_src).has_moved
+
+    for i in (1..2)
+      coord = [king_src[0] - i, king_src[1]]
+      return false if query(coord) or player.opponent.controlled_squares.include?(coord)
+    end
+
+    #All cases pass:
+    query(king_src).move(king_dest)
+    query(rook_src).move(rook_dest)
+
+    move_no_change(king_src, king_dest)
+    move(rook_src, rook_dest)
+    return true
+  end
+end
 
   private
 
@@ -141,6 +199,11 @@ class Board
       print "\n"
     end
     puts "  H G F E D C B A"
+  end
+
+  def move_no_change(src, dest)
+    @grid[dest[1]][dest[0]] = @grid[src[1]][src[0]]
+    @grid[src[1]][src[0]] = nil
   end
 
 end

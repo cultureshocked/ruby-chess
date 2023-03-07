@@ -2,7 +2,7 @@ require_relative "./piece.rb"
 
 class Player
 
-  attr_reader :color, :king, :pieces
+  attr_reader :color, :king, :pieces, :opponent
   attr_writer :check
 
   def initialize(color)
@@ -34,12 +34,31 @@ class Player
   end
 
   def turn
+
     if @board.check?(self)
       puts " **** IN CHECK!!! **** "
       return check_turn
     end
+
+    legal = []
+    for piece in @pieces
+      legal.concat piece.legal_moves
+    end
+    return @board.stalemate if legal.length == 0
+
     move = get_move
     loop do
+      if move.class.name == "String"
+        if move.downcase == "o-o" or move.downcase == "o-o-o"
+          if @board.castle?(move, self)
+            return
+          else
+            puts "Cannot castle in that direction."
+            move = get_move
+            next
+          end
+        end
+      end
       src = Coordinate.xy_from_alg(move[0])
       piece = find_piece(src)
 
@@ -48,6 +67,7 @@ class Player
         move = get_move
         next
       end
+
 
       dest = Coordinate.xy_from_alg(move[1])
       unless piece.legal_moves.include?(dest)
@@ -124,6 +144,10 @@ class Player
 
     loop do
       move = get_move
+      if move.downcase == "o-o" or mvoe.downcase == "o-o-o"
+        puts "Cannot castle in check!"
+        next
+      end
       move = move.map { |sq| Coordinate.xy_from_alg(sq) }
 
       unless possible_moves.include?(move)
@@ -168,10 +192,22 @@ class Player
 
   def get_move
     puts "Enter a move (from to)"
-    move = gets.chomp.split
+    move = gets.chomp
+
+    if move.downcase == "o-o" or move.downcase == "o-o-o"
+      return move
+    else
+      move = move.split
+    end
+
     until (move[0].match /^[a-hA-H][1-8]$/ and move[1].match /^[a-hA-H][1-8]$/)
       puts "That move is not valid. Try again."
-      move = gets.chomp.split
+      move = gets.chomp
+      if move.downcase == "o-o" or move.downcase == "o-o-o"
+        return move
+      else
+        move = move.split
+      end
     end
     move
   end
