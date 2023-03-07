@@ -5,8 +5,8 @@ An implementation of Chess in Ruby.
 * None at the moment.
 
 ## TODO
-* Finish all logic implementation
-* Create rspec tests
+* Add pin logic
+* Create (more) rspec tests
 * Add *curses for better UI
 * Add network support
 
