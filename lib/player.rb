@@ -78,10 +78,18 @@ class Player
 
       if @board.query(dest)
         puts "Capturing piece on #{move[1]}"
-        @board.capture(src, dest)
+        unless @board.capture(src, dest)
+          puts "That piece is pinned and cannot capture!"
+          move = get_move
+          next
+        end
       else
         puts "Moving to #{move[1]}"
-        @board.move(src, dest)
+        unless @board.move(src, dest)
+          puts "That piece is pinned!"
+          move = get_move
+          next
+        end
       end
       piece.move(dest)
       break
@@ -144,10 +152,12 @@ class Player
 
     loop do
       move = get_move
-      if move.downcase == "o-o" or mvoe.downcase == "o-o-o"
+
+      if move.class.name == "String"
         puts "Cannot castle in check!"
         next
       end
+
       move = move.map { |sq| Coordinate.xy_from_alg(sq) }
 
       unless possible_moves.include?(move)
@@ -156,10 +166,23 @@ class Player
       end
 
       #This can be cleaned, I'm sure.
-      if @board.query(move[1])
-        @board.capture(move[0], move[1])
+
+      src = move[0]
+      dest = move[1]
+      if @board.query(dest)
+        unless @board.capture(src, dest)
+          puts "That piece is pinned and cannot capture!"
+          move = get_move
+          next
+        end
+        @board.query(src).move(dest)
       else
-        @board.move(move[0], move[1])
+        unless @board.move(src, dest)
+          puts "That piece is pinned!"
+          move = get_move
+          next
+        end
+        @board.query(dest).move(dest)
       end
       break
     end

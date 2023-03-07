@@ -78,16 +78,33 @@ class Board
   end
 
   def move(src, dest)
-    @grid[dest[1]][dest[0]] = @grid[src[1]][src[0]]
+    friendly_piece = query(src)
+    friendly_player = friendly_piece.player
     @grid[src[1]][src[0]] = nil
+    @grid[dest[1]][dest[0]] = friendly_piece
+    if check?(friendly_player)
+      @grid[src[1]][src[0]] = friendly_piece
+      @grid[dest[1]][dest[0]] = nil
+      return false
+    end
     @current_turn = (@current_turn == @players[0]) ? @players[1] : @players[0]
-    # check?(@current_turn)
+    return true
   end
 
   def capture(src, dest)
-    enemy = query(dest).color
-    @players[enemy].remove_piece(query(dest))
-    move(src, dest)
+    current_turn = query(src).player
+    enemy = query(dest).player
+    enemy_piece = query(dest)
+    enemy.remove_piece(enemy_piece)
+    @grid[dest[1]][dest[0]] = nil
+
+    if move(src, dest)
+      return true
+    else
+      @grid[dest[1]][dest[0]] = enemy_piece
+      enemy.add_piece(enemy_piece)
+      return false
+    end
   end
 
   def resign(color)
